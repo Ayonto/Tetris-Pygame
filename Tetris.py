@@ -1,3 +1,6 @@
+# made by _S_I_Ayonto
+# 2020
+
 import pygame
 import types
 import time
