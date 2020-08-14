@@ -193,7 +193,6 @@ while running:
 				move_time = 0.2
 			if event.key == pygame.K_UP:
 				block.rotate()
-				print("pressed")
 				
 			if event.key == pygame.K_RIGHT:
 				for i in block.Block_list[-1]:
@@ -218,7 +217,6 @@ while running:
 	time.sleep(0.1)
 	for j in range(len(Board)):
 		if all(n==1 for n in Board[j]) == True and block.Block_list[-2][-2] == False:
-			print(f"{j} Row is same")
 			pop_block(j)
 			move_down(j)
 			score += 1
