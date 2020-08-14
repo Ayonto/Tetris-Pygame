@@ -1,9 +1,9 @@
 # made by _S_I_Ayonto
-# 2020
 
 import pygame
 import types
 import time
+import sys
 from Block import Block
 pygame.init()
 
@@ -48,14 +48,16 @@ score = 0
 # fonts
 comicsams = pygame.font.SysFont("comicsams", 32)
 Title = pygame.font.SysFont("comicsams", 48)
+Lost_font = pygame.font.SysFont("comicsams", 60)
 # functions
 
-def collision(x, y):
+def collision(x, y, b):
 	for j in block.Block_list:
-		for i in j:
-			if not isinstance(i, bool) and i != j[-1]:
-				if i[0] == x and i[1] == y+1:
-					return True
+		if j != b:
+			for i in j:
+				if not isinstance(i, bool) and i!=j[-1]:
+					if i[0] == x and i[1] == y+1:
+						return True
 	return False
 			
 
@@ -73,13 +75,6 @@ def pop_block(y):
 				if not isinstance(i, bool) and i != j[-1]:
 					if i[1] == y:
 						j.pop(j.index(i))
-					
-	# for j in block.Block_list:
-	# 	for i in range(len(j)):
-	# 		if not isinstance(j[i], bool):
-	# 			if j[i][1] == y:
-	# 				j.pop(i)
-	# 				i = 0
 
 
 def move_down(y):
@@ -95,9 +90,6 @@ def printBoard():   # for debug purpose
 def checkBlockPosition(n, m):
 	for y in block.Block_list:
 		for x in y:
-			# print(f"x, y = {x[0], x[1]}")
-			# print(x)
-			# print(f"n, m = {n, m}")
 			if not isinstance(x, bool) and x != y[-1]:
 				if x[0] == n and x[1] == m:
 					return True
@@ -105,11 +97,23 @@ def checkBlockPosition(n, m):
 
 def check_lost():
 	for j in block.Block_list:
-		for i in j:
-			if not isinstance(i, bool) and i != j[-1]:
-				if i[1] == 0:
-					return True
+		if j != block.Block_list[-1]:
+			for i in j:
+				if not isinstance(i, bool) and i != j[-1]:
+					if i[1] == 1:
+						return True
 	return False
+
+def show_lost_screen():
+	window.fill(black)
+	lost_title = Lost_font.render("Game Over", 1, white)
+	score_font = Lost_font.render(f"{str(score)}", 1, white)
+
+	window.blit(lost_title, (WIDTH/2-lost_title.get_width()/2, 200))
+	window.blit(score_font, (WIDTH/2-score_font.get_width()/2, 300))
+
+	pygame.display.update()
+	
 
 def updateBoard():
 	for j in range(20):
@@ -166,7 +170,7 @@ while running:
 						if i[1] < 19:
 							i[1] += 1
 							start_tick = pygame.time.get_ticks()
-						if i[1] == 19 or collision(i[0], i[1])==True:
+						if i[1] == 19 or collision(i[0], i[1], j)==True:
 							j[-2] = False
 
 
@@ -180,7 +184,6 @@ while running:
 		block.spawn()
 
 
-
 	draw()
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -188,6 +191,10 @@ while running:
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_DOWN:
 				move_time = 0.2
+			if event.key == pygame.K_UP:
+				block.rotate()
+				print("pressed")
+				
 			if event.key == pygame.K_RIGHT:
 				for i in block.Block_list[-1]:
 					if not isinstance(i, bool) and i != block.Block_list[-1][-1]:
@@ -219,10 +226,12 @@ while running:
 	# check for lost
 
 	if(check_lost()==True):
-		pass
-
-
-	
+		time.sleep(2)
+		show_lost_screen()
+		time.sleep(3)
+		pygame.quit()
+		sys.exit()
 
 pygame.quit()
-printBoard()
+
+# printBoard() # for debuging
